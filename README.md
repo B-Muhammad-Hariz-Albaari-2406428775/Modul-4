@@ -153,3 +153,33 @@ The `CarController extends ProductController` relationship was removed because a
 - **OCP & LSP violation** — `CarController extends ProductController` caused Car to silently inherit all Product mappings. If someone added a new method to `ProductController`, `CarController` would be affected without anyone realizing it. That kind of hidden dependency makes the codebase unpredictable.
 
 - **DIP violation** — Injecting `CarServiceImpl` directly into the controller creates tight coupling. If the implementation ever needs to change (say, swapping in-memory storage for a real database), you'd have to go back and change the controller too. Depending on the interface avoids all of that.
+
+
+# Reflection 4
+## 1. Test-Driven Development (TDD) Workflow Reflection
+the TDD workflow has proven to be highly useful, though it requires a disciplined mindset. By forcing the creation of tests before the actual implementation (the Red-Green-Refactor cycle), it naturally drove the design of the application. It made me think critically about the expected behavior, edge cases, and the interaction between the Controller, Service, and Repository layers before writing the actual business logic. Most importantly, it provided a strong safety net that gave me confidence when refactoring code later.
+
+### Areas for Improvement:
+While the flow is useful, I noticed a tendency to occasionally slip out of the strict TDD mindset. Next time I create more tests, I need to do the following:
+
+Avoid Implementation Coupling: I need to ensure my tests evaluate the behavior and the final output rather than tightly coupling the test to the internal implementation details. Over-mocking can sometimes make tests brittle if the internal logic changes.
+
+Strict Timeliness: I must be stricter about writing the failing test before even creating the skeleton of the production code, rather than writing them almost in parallel.
+
+## 2. F.I.R.S.T. Principle Reflection
+Fast: Achieved. By utilizing mocking frameworks (like Mockito) for the Repository and Service layers, the unit tests execute in milliseconds. They do not rely on spinning up a real database or the full application context.
+
+Isolated/Independent: Mostly Achieved. Each test method is generally designed to run independently without relying on the state of previous tests.
+
+Repeatable: Achieved. The tests yield the exact same results regardless of the environment (whether on a local machine or in the automated CI/CD pipeline) because they are decoupled from external infrastructure.
+
+Self-validating: Achieved. The tests use clear, definitive assertions (e.g., assertEquals, assertTrue) to determine success or failure automatically, requiring no manual log inspection.
+
+Timely: Needs Improvement. As noted in the TDD reflection, while the intent was there, some tests were written slightly after the implementation skeleton was already drafted.
+
+### Areas for Improvement:
+To fully satisfy the F.I.R.S.T. principles in future implementations, I need to:
+
+Strict Isolation Management: I will be extra careful with shared test fixtures and setup configurations. I must ensure all mock data is freshly instantiated before every single test (using @BeforeEach) to prevent any accidental data leakage or state persistence between test cases.
+
+Enforce Timeliness: I will commit fully to the TDD cycle to ensure tests are written exactly when they are needed—immediately before the production code that is meant to make them pass.
