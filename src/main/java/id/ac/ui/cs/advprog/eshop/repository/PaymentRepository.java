@@ -20,4 +20,8 @@ public class PaymentRepository {
                 .filter(p -> p.getId().equals(id))
                 .findFirst().orElse(null);
     }
+
+    public List<Payment> findAll() {
+        return new ArrayList<>(paymentData); 
+    }
 }
