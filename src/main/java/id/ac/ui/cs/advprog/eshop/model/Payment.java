@@ -1,26 +1,29 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
+import lombok.Builder;
 import lombok.Getter;
 import java.util.Map;
-import java.util.Arrays;
-
 
 @Getter
+@Builder
 public class Payment {
-    String id;
-    String method;
-    String status;
-    Map<String, String> paymentData;
-
+    private String id; 
+    private String method; 
+    private String status; 
+    private Map<String, String> paymentData; 
     public Payment(String id, String method, String status, Map<String, String> paymentData) {
         this.id = id;
         this.method = method;
         this.paymentData = paymentData;
-        
-        String[] validStatus = {"WAITING_PAYMENT", "SUCCESS", "REJECTED"};
-        if (Arrays.stream(validStatus).noneMatch(s -> s.equals(status))) {
+        this.setStatus(status);
+    }
+
+    public void setStatus(String status) {
+        if (OrderStatus.contains(status)) {
+            this.status = status;
+        } else {
             throw new IllegalArgumentException();
         }
-        this.status = status;
     }
 }
