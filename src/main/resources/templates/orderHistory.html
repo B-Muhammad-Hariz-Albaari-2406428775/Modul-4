@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order History</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container my-4">
+    <h2 class="mb-4">View Order History</h2>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/order/history}" method="post">
+        <div class="form-group">
+            <label for="authorInput">Enter Your Name</label>
+            <input type="text" class="form-control mb-4 col-6" id="authorInput" name="author" 
+                   placeholder="Enter your name to view order history" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">View Orders</button>
+        <a th:href="@{/order/create}" class="btn btn-secondary">Create New Order</a>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        crossorigin="anonymous">
+</script>
+
+</body>
+</html>
+

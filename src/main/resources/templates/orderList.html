@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container my-4">
+    <h2 class="mb-4">Order History for <span th:text="${author}"></span></h2>
+
+    <a th:href="@{/order/create}" class="btn btn-primary btn-sm mb-3">Create New Order</a>
+    <a th:href="@{/order/history}" class="btn btn-secondary btn-sm mb-3">Search Another User</a>
+
+    <div th:if="${orders.isEmpty()}" class="alert alert-info">
+        No orders found for this user.
+    </div>
+
+    <div th:unless="${orders.isEmpty()}">
+        <table class="table table-striped table-responsive-md">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Order ID</th>
+                <th scope="col">Order Time</th>
+                <th scope="col">Status</th>
+                <th scope="col">Products</th>
+                <th scope="col" class="text-center">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${#dates.format(new java.util.Date(order.orderTime * 1000), 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <span th:if="${order.status == 'WAITING_PAYMENT'}" class="badge badge-warning" th:text="${order.status}"></span>
+                    <span th:if="${order.status == 'SUCCESS'}" class="badge badge-success" th:text="${order.status}"></span>
+                    <span th:if="${order.status == 'FAILED'}" class="badge badge-danger" th:text="${order.status}"></span>
+                    <span th:if="${order.status == 'CANCELLED'}" class="badge badge-secondary" th:text="${order.status}"></span>
+                </td>
+                <td>
+                    <ul class="mb-0">
+                        <li th:each="product : ${order.products}">
+                            <span th:text="${product.productName}"></span> 
+                            (Qty: <span th:text="${product.productQuantity}"></span>)
+                        </li>
+                    </ul>
+                </td>
+                <td class="text-center">
+                    <a th:if="${order.status == 'WAITING_PAYMENT'}" 
+                       th:href="@{/order/pay/{orderId}(orderId=${order.id})}"
+                       class="btn btn-success btn-sm">
+                        Pay Now
+                    </a>
+                    <span th:unless="${order.status == 'WAITING_PAYMENT'}" class="text-muted">
+                        -
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        crossorigin="anonymous">
+</script>
+
+</body>
+</html>
+
