@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class PaymentServiceImplTest {
 
         order = new Order("13652556-012a-4c07-b546-54eb1396d79b",
                 products, 1708560000L, "Safira Sudrajat");
+        when(orderRepository.findById(order.getId())).thenReturn(order);
 
         // Create real validators and factory for testing
         VoucherPaymentValidator voucherValidator = new VoucherPaymentValidator();
@@ -61,14 +63,20 @@ public class PaymentServiceImplTest {
 
     @Test
     void testAddPaymentVoucherSuccess() {
+        // 1. Arrange: Prepare data and stub the repository
         Map<String, String> data = new HashMap<>();
         data.put("voucherCode", "ESHOP1234ABC5678");
+
+        // Stubbing the orderRepository is the key fix here
+        when(orderRepository.findById(order.getId())).thenReturn(order);
 
         Payment expectedPayment = new Payment(order.getId(), "VOUCHER", "SUCCESS", data);
         when(paymentRepository.save(any(Payment.class))).thenReturn(expectedPayment);
 
+        // 2. Act
         Payment result = paymentService.addPayment(order, "VOUCHER", data);
 
+        // 3. Assert
         assertEquals("SUCCESS", result.getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
     }
