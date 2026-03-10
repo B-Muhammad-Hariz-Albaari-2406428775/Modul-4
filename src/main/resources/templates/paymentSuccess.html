@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Result</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container my-4">
+    <h2 class="mb-4">Payment Result</h2>
+
+    <div th:if="${payment.status == 'SUCCESS'}" class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Payment Successful!</h4>
+        <p>Your payment has been processed successfully.</p>
+    </div>
+
+    <div th:if="${payment.status == 'REJECTED'}" class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Payment Rejected!</h4>
+        <p>Your payment was rejected. Please check your payment details and try again.</p>
+    </div>
+
+    <div th:if="${payment.status == 'FAILED'}" class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Payment Failed!</h4>
+        <p>Your payment has failed. Please try again later.</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Payment Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Payment ID:</strong> <span th:text="${payment.id}"></span></p>
+            <p><strong>Payment Method:</strong> <span th:text="${payment.method}"></span></p>
+            <p><strong>Payment Status:</strong> 
+                <span th:if="${payment.status == 'SUCCESS'}" class="badge badge-success" th:text="${payment.status}"></span>
+                <span th:if="${payment.status == 'REJECTED'}" class="badge badge-danger" th:text="${payment.status}"></span>
+                <span th:if="${payment.status == 'FAILED'}" class="badge badge-danger" th:text="${payment.status}"></span>
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Order Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Order ID:</strong> <span th:text="${order.id}"></span></p>
+            <p><strong>Customer:</strong> <span th:text="${order.author}"></span></p>
+            <p><strong>Order Status:</strong> 
+                <span th:if="${order.status == 'SUCCESS'}" class="badge badge-success" th:text="${order.status}"></span>
+                <span th:if="${order.status == 'FAILED'}" class="badge badge-danger" th:text="${order.status}"></span>
+                <span th:if="${order.status == 'WAITING_PAYMENT'}" class="badge badge-warning" th:text="${order.status}"></span>
+            </p>
+            <p><strong>Products:</strong></p>
+            <ul>
+                <li th:each="product : ${order.products}">
+                    <span th:text="${product.productName}"></span> 
+                    (Quantity: <span th:text="${product.productQuantity}"></span>)
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/order/history?author={author}(author=${order.author})}" class="btn btn-primary">View Order History</a>
+        <a th:href="@{/order/create}" class="btn btn-secondary">Create New Order</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        crossorigin="anonymous">
+</script>
+
+</body>
+</html>
+
