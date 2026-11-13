@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Payment List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container my-4">
+    <h2 class="mb-4">Admin - All Payments</h2>
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${payments.isEmpty()}" class="alert alert-info" role="alert">
+        No payments found.
+    </div>
+
+    <div th:if="${!payments.isEmpty()}">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment.id}"></td>
+                    <td th:text="${payment.method}"></td>
+                    <td>
+                        <span th:if="${payment.status == 'SUCCESS'}" class="badge badge-success" th:text="${payment.status}"></span>
+                        <span th:if="${payment.status == 'REJECTED'}" class="badge badge-danger" th:text="${payment.status}"></span>
+                        <span th:if="${payment.status == 'FAILED'}" class="badge badge-danger" th:text="${payment.status}"></span>
+                        <span th:if="${payment.status == 'WAITING_PAYMENT'}" class="badge badge-warning" th:text="${payment.status}"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/payment/admin/detail/{id}(id=${payment.id})}" class="btn btn-sm btn-primary">View Details</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        crossorigin="anonymous">
+</script>
+
+</body>
+</html>
+

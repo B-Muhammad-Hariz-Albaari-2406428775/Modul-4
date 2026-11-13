@@ -109,3 +109,77 @@ before being merged into the main branch.
 It also follows Continuous Deployment since the application is automatically deployed to a PaaS after a 
 successful build and test process. This means there is no need for manual deployment steps. Overall, 
 the CI/CD pipeline is working as expected because testing, analysis, and deployment are all automated and connected.
+
+---
+
+# Reflection 3
+
+## MODULE 3 : SOLID Principles Reflection
+
+### 1. Principles Applied
+
+**Single Responsibility Principle (SRP)**  
+`CarController` was moved into its own separate file (`CarController.java`) instead of being bundled together with `ProductController.java`. Now each controller only handles what it's supposed to. one class, one job.
+
+**Open/Closed Principle (OCP)**  
+`CarController` no longer extends `ProductController`. This inheritance was problematic because any change to `ProductController` could silently break `CarController`. Now both are independent and can be extended without touching each other.
+
+**Liskov Substitution Principle (LSP)**  
+The `CarController extends ProductController` relationship was removed because a Car is simply not a Product. Forcing that inheritance just to reuse some behavior was semantically wrong and could lead to subtle bugs down the line.
+
+**Dependency Inversion Principle (DIP)**  
+`CarController` used to inject `CarServiceImpl` directly (a concrete class). It now depends on the `CarService` interface instead, which is the right way to do it, high-level modules shouldn't care about implementation details.
+
+> ISP (Interface Segregation Principle) was already in good shape from the start. `CarService` and `ProductService` are separate interfaces, so neither forces irrelevant methods on their implementors.
+
+---
+
+### 2. Advantages of Applying SOLID Principles
+
+- **Easier to maintain**: With SRP in place, if something breaks in the Car feature, you know exactly where to look — `CarController.java`. No need to dig through unrelated Product code.
+
+- **Less risk of breaking things**: After fixing the OCP violation, changes to `ProductController` won't accidentally affect `CarController` anymore. Before, a small change in the parent class could break Car behavior in ways that were hard to trace.
+
+- **Easier to test**: Since `CarController` now depends on the `CarService` interface (DIP), you can easily mock the service in unit tests without having to spin up the full `CarServiceImpl` with all its dependencies.
+
+- **Things make sense semantically**: Removing the `extends ProductController` (LSP fix) means Car endpoints no longer accidentally inherit Product behavior. What you see in the code is what actually happens at runtime.
+
+---
+
+### 3. Disadvantages of Not Applying SOLID Principles
+
+- **SRP violation** — Having both controllers in one file means the file has too many reasons to change. Updating Car routing logic forces you to touch the same file as Product logic, which increases the chance of introducing unintended bugs in unrelated features.
+
+- **OCP & LSP violation** — `CarController extends ProductController` caused Car to silently inherit all Product mappings. If someone added a new method to `ProductController`, `CarController` would be affected without anyone realizing it. That kind of hidden dependency makes the codebase unpredictable.
+
+- **DIP violation** — Injecting `CarServiceImpl` directly into the controller creates tight coupling. If the implementation ever needs to change (say, swapping in-memory storage for a real database), you'd have to go back and change the controller too. Depending on the interface avoids all of that.
+
+
+# Reflection 4
+## 1. Test-Driven Development (TDD) Workflow Reflection
+the TDD workflow has proven to be highly useful, though it requires a disciplined mindset. By forcing the creation of tests before the actual implementation (the Red-Green-Refactor cycle), it naturally drove the design of the application. It made me think critically about the expected behavior, edge cases, and the interaction between the Controller, Service, and Repository layers before writing the actual business logic. Most importantly, it provided a strong safety net that gave me confidence when refactoring code later.
+
+### Areas for Improvement:
+While the flow is useful, I noticed a tendency to occasionally slip out of the strict TDD mindset. Next time I create more tests, I need to do the following:
+
+Avoid Implementation Coupling: I need to ensure my tests evaluate the behavior and the final output rather than tightly coupling the test to the internal implementation details. Over-mocking can sometimes make tests brittle if the internal logic changes.
+
+Strict Timeliness: I must be stricter about writing the failing test before even creating the skeleton of the production code, rather than writing them almost in parallel.
+
+## 2. F.I.R.S.T. Principle Reflection
+Fast: Achieved. By utilizing mocking frameworks (like Mockito) for the Repository and Service layers, the unit tests execute in milliseconds. They do not rely on spinning up a real database or the full application context.
+
+Isolated/Independent: Mostly Achieved. Each test method is generally designed to run independently without relying on the state of previous tests.
+
+Repeatable: Achieved. The tests yield the exact same results regardless of the environment (whether on a local machine or in the automated CI/CD pipeline) because they are decoupled from external infrastructure.
+
+Self-validating: Achieved. The tests use clear, definitive assertions (e.g., assertEquals, assertTrue) to determine success or failure automatically, requiring no manual log inspection.
+
+Timely: Needs Improvement. As noted in the TDD reflection, while the intent was there, some tests were written slightly after the implementation skeleton was already drafted.
+
+### Areas for Improvement:
+To fully satisfy the F.I.R.S.T. principles in future implementations, I need to:
+
+Strict Isolation Management: I will be extra careful with shared test fixtures and setup configurations. I must ensure all mock data is freshly instantiated before every single test (using @BeforeEach) to prevent any accidental data leakage or state persistence between test cases.
+
+Enforce Timeliness: I will commit fully to the TDD cycle to ensure tests are written exactly when they are needed—immediately before the production code that is meant to make them pass.
